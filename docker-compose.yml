@@ -1,0 +1,49 @@
+version: "3"
+services: 
+  mysql:
+    hostname: mysql
+    image: mariadb:latest
+    container_name: mysql
+    restart: on-failure:3
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+        - ROOT_PASSWORD=123456
+        - PASSWORD=123456
+        - DATABASE=mysql
+        - USER=mysql
+    volumes:
+        - "./mysql:/var/lib/mysql"
+    environment:
+      - TZ=Asia/Shanghai
+
+  php: 
+    hostname: php
+    container_name: php
+    image: php:5.6-fpm
+    restart: on-failure:3
+    volumes: 
+      - "./html:/var/www/html"
+    links: 
+      - mysql
+    depends_on: 
+      - mysql
+    environment:
+      - TZ=Asia/Shanghai
+
+  nginx: 
+    hostname: nginx
+    container_name: nginx
+    build:
+      context: "."
+    image: nginx
+    restart: on-failure:3
+    volumes: 
+      - "./html:/var/www/html"
+    ports:
+      - 80:80
+    depends_on: 
+      - php
+    links: 
+      - php
+    environment:
+      - TZ=Asia/Shanghai
