@@ -35,7 +35,8 @@ services:
     container_name: nginx
     build:
       context: "."
-    image: nginx
+      dockerfile: Dockerfile.nginx
+    image: nginx:local
     restart: on-failure:3
     volumes: 
       - "./html:/var/www/html"
